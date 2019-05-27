@@ -1,5 +1,5 @@
 declare module "eris" {
-  // TODO good hacktoberfest PR: implement ShardManager, RequestHandler and other stuff
+  // TODO good hacktoberfest PR: implement RequestHandler and other stuff
   import { EventEmitter } from "events";
   import { Readable as ReadableStream } from "stream";
   import { Agent as HTTPAgent } from "http";
@@ -502,6 +502,7 @@ declare module "eris" {
 
   export class ShardManager extends Collection<Shard> {
     public constructor(client: Client);
+    private _readyPacketCB(): void
     public connect(shard: Shard): void;
     public spawn(id: number): void;
     public toJSON(): string;
