@@ -1021,6 +1021,7 @@ declare module "eris" {
     public email: string;
     public verified: boolean;
     public mfaEnabled: boolean;
+    public toJSON(): SimpleJSON
   }
 
   export class GroupChannel extends PrivateChannel {
