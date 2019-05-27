@@ -1,5 +1,5 @@
 declare module "eris" {
-  // TODO good hacktoberfest PR: implement RequestHandler and other stuff
+  // TODO good hacktoberfest PR: implement other stuff
   import { EventEmitter } from "events";
   import { Readable as ReadableStream } from "stream";
   import { Agent as HTTPAgent } from "http";
@@ -499,6 +499,20 @@ declare module "eris" {
   type CommandGeneratorFunction = (msg: Message, args: string[]) => Promise<MessageContent>
     | Promise<void> | MessageContent | void;
   type CommandGenerator = CommandGeneratorFunction | MessageContent | MessageContent[] | CommandGeneratorFunction[];
+
+  
+  interface file {
+    name: string,
+    file: Buffer
+  }
+
+  export class RequestHandler {
+    public constructor(client: Client, forceQueueing?:any);
+    public request(method: string, url:string, auth: boolean,body?: object, file?:file): Promise<any>;
+    private globalUnblock(): void;
+    private routefy(url: string, method: string): void;
+    public toJSON(): string;
+  }
 
   export class ShardManager extends Collection<Shard> {
     public constructor(client: Client);
