@@ -40,8 +40,8 @@ Eris.VoiceConnection = require("./lib/voice/VoiceConnection");
 Eris.VoiceConnectionManager = require("./lib/voice/VoiceConnectionManager");
 Eris.VoiceState = require("./lib/structures/VoiceState");
 
-Object.keys(Eris).filter(prop => Eris.hasOwnProperty(prop) && typeof Eris[prop] === "function" && !(Eris[prop] instanceof Eris.Base)).forEach(prop => {
+for (const prop of Object.keys(Eris).filter(prop => Eris.hasOwnProperty(prop) && typeof Eris[prop] === "function" && !(Eris[prop] instanceof Eris.Base))) {
     Eris[prop].prototype.toString = Eris.Base.prototype.toString;
-});
+};
 
 module.exports = Eris;
