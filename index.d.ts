@@ -994,6 +994,7 @@ declare module "eris" {
   }
 
   export class Call extends Base {
+    public constructor(data: BaseData, channel: GroupChannel);
     public id: string;
     public createdAt: number;
     public channel: GroupChannel;
@@ -1003,7 +1004,7 @@ declare module "eris" {
     public ringing?: string[];
     public region?: string;
     public unavailable: boolean;
-    public constructor(data: BaseData, channel: GroupChannel);
+    public toJSON(): JSONCache;
   }
 
   export class Channel extends Base {
