@@ -1278,6 +1278,7 @@ declare module "eris" {
     public defaultAvatarURL: string;
     public avatarURL: string;
     public staticAvatarURL: string;
+    public tag: string;
     public constructor(data: BaseData, guild: Guild);
     public edit(
       options: MemberOptions, reason?: string,
