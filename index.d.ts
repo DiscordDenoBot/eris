@@ -216,6 +216,11 @@ declare module "eris" {
     on(event: "warn" | "debug", listener: (message: string, id: number) => void): this;
   }
 
+  interface channelTypes {
+      API_TYPE: number,
+      FRIENDLY_TYPE: string
+  }
+
   interface Constants {
     DefaultAvatarHashes: string[];
     ImageFormats: string[];
@@ -225,6 +230,7 @@ declare module "eris" {
     VoiceOPCodes: {[key: string]: number};
     SystemJoinMessages: string[];
     AuditLogActions: {[key: string]: number};
+    channelTypes: {[key: string]: channelTypes}
   }
 
   export const Constants: Constants;
@@ -1005,6 +1011,8 @@ declare module "eris" {
     public mention: string;
     public type: number;
     public createdAt: number;
+    public isType(type: string| number): boolean
+    public friendlyType(): string
     public constructor(data: BaseData);
   }
 
@@ -1292,6 +1300,7 @@ declare module "eris" {
   }
 
   export class Message extends Base {
+    public constructor(data: BaseData, client: Client);
     public id: string;
     public createdAt: number;
     public channel: TextableChannel;
@@ -1307,12 +1316,12 @@ declare module "eris" {
     public editedTimestamp?: number;
     public tts: boolean;
     public mentionEveryone: boolean;
+    public guild(): Guild | undefined
     public attachments: Attachment[];
     public embeds: Embed[];
     public reactions: { [s: string]: any, count: number, me: boolean };
     public prefix?: string;
     public command?: Command;
-    public constructor(data: BaseData, client: Client);
     public edit(content: MessageContent): Promise<Message>;
     public pin(): Promise<void>;
     public unpin(): Promise<void>;
