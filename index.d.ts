@@ -510,7 +510,7 @@ declare module "eris" {
     public constructor(client: Client, forceQueueing?:any);
     public request(method: string, url:string, auth: boolean,body?: object, file?:file): Promise<any>;
     private globalUnblock(): void;
-    private routefy(url: string, method: string): void;
+    public routefy(url: string, method: string): void;
     public toJSON(): string;
   }
 
