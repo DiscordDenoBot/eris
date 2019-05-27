@@ -1272,6 +1272,7 @@ declare module "eris" {
     public kick(reason?: string): Promise<void>;
     public ban(deleteMessageDays?: number, reason?: string): Promise<void>;
     public unban(reason?: string): Promise<void>;
+    public disconnect(bypassCheck?:boolean): Promise<void> | undefined
   }
 
   export class Message extends Base {
