@@ -1052,6 +1052,8 @@ declare module "eris" {
     public banner?: string;
     public unavailable: boolean;
     public large: boolean;
+    public clientMember: Member;
+    public owner: Member;
     public maxPresences: number;
     public channels: Collection<AnyGuildChannel>;
     public members: Collection<Member>;
