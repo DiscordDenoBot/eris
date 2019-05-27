@@ -1013,7 +1013,7 @@ declare module "eris" {
     public type: number;
     public createdAt: number;
     public isType(type: string| number): boolean
-    public friendlyType(): string
+    public friendlyType: string
     public constructor(data: BaseData);
   }
 
