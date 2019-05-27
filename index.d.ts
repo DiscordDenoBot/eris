@@ -1,5 +1,5 @@
 declare module "eris" {
-  // TODO good hacktoberfest PR: implement ShardManager, RequestHandler and other stuff
+  // TODO good hacktoberfest PR: implement RequestHandler and other stuff
   import { EventEmitter } from "events";
   import { Readable as ReadableStream } from "stream";
   import { Agent as HTTPAgent } from "http";
@@ -502,6 +502,7 @@ declare module "eris" {
 
   export class ShardManager extends Collection<Shard> {
     public constructor(client: Client);
+    private _readyPacketCB(): void
     public connect(shard: Shard): void;
     public spawn(id: number): void;
     public toJSON(): string;
@@ -685,6 +686,7 @@ declare module "eris" {
     public removeGuildMemberRole(guildID: string, memberID: string, roleID: string, reason?: string): Promise<void>;
     public editNickname(guildID: string, nick: string, reason?: string): Promise<void>;
     public kickGuildMember(guildID: string, userID: string, reason?: string): Promise<void>;
+    public disconnectGuildMember(guildID: string, userID: string): Promise<void>;
     public deleteGuild(guildID: string): Promise<void>;
     public leaveGuild(guildID: string): Promise<void>;
     public getOAuthApplication(appID?: string): Promise<OAuthApplicationInfo>;
@@ -1271,6 +1273,7 @@ declare module "eris" {
     public kick(reason?: string): Promise<void>;
     public ban(deleteMessageDays?: number, reason?: string): Promise<void>;
     public unban(reason?: string): Promise<void>;
+    public disconnect(bypassCheck?:boolean): Promise<void> | undefined
   }
 
   export class Message extends Base {
