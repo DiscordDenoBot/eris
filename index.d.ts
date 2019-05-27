@@ -1013,7 +1013,7 @@ declare module "eris" {
     public type: number;
     public createdAt: number;
     public isType(type: string| number): boolean
-    public friendlyType(): string
+    public friendlyType: string
     public constructor(data: BaseData);
   }
 
@@ -1021,6 +1021,7 @@ declare module "eris" {
     public email: string;
     public verified: boolean;
     public mfaEnabled: boolean;
+    public toJSON(): SimpleJSON
   }
 
   export class GroupChannel extends PrivateChannel {
@@ -1033,6 +1034,7 @@ declare module "eris" {
     public addRecipient(userID: string): Promise<void>;
     public removeRecipient(userID: string): Promise<void>;
     public dynamicIconURL(format: string, size: number): string;
+    public toJSON(): SimpleJSON
   }
 
   export class Guild extends Base {
