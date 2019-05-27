@@ -685,6 +685,7 @@ declare module "eris" {
     public removeGuildMemberRole(guildID: string, memberID: string, roleID: string, reason?: string): Promise<void>;
     public editNickname(guildID: string, nick: string, reason?: string): Promise<void>;
     public kickGuildMember(guildID: string, userID: string, reason?: string): Promise<void>;
+    public disconnectGuildMember(guildID: string, userID: string): Promise<void>;
     public deleteGuild(guildID: string): Promise<void>;
     public leaveGuild(guildID: string): Promise<void>;
     public getOAuthApplication(appID?: string): Promise<OAuthApplicationInfo>;
