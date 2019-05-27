@@ -1034,6 +1034,7 @@ declare module "eris" {
     public addRecipient(userID: string): Promise<void>;
     public removeRecipient(userID: string): Promise<void>;
     public dynamicIconURL(format: string, size: number): string;
+    public toJSON(): SimpleJSON
   }
 
   export class Guild extends Base {
