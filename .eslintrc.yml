@@ -2,13 +2,11 @@ env:
   es6: true
   node: true
 extends: "semistandard"
-globals:
-  window: true
 parserOptions:
   ecmaVersion: 9
 rules:
   no-var: "error"
   prefer-const: "error"
   semi: ["error", "always"]
-  indent: ["error", 4],
+  indent: ["error", 4]
   quotes: ["error", "double"]
