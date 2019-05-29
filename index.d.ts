@@ -18,8 +18,8 @@ declare module "eris" {
 
   // TODO there's also toJSON(): JSONCache, though, SimpleJSON should suffice
 
-  type TextableChannel = TextChannel | PrivateChannel | GroupChannel;
-  type AnyChannel = TextChannel | VoiceChannel | CategoryChannel | PrivateChannel | GroupChannel;
+  type TextableChannel = TextChannel | PrivateChannel;
+  type AnyChannel = TextChannel | VoiceChannel | CategoryChannel | PrivateChannel;
   type AnyGuildChannel = TextChannel | VoiceChannel | CategoryChannel;
 
   interface CreateInviteOptions {
@@ -116,22 +116,10 @@ declare module "eris" {
     // tslint:disable-next-line
     on(event: string, listener: Function): this;
     on(event: "ready" | "disconnect", listener: () => void): this;
-    on(event: "callCreate" | "callRing" | "callDelete", listener: (call: Call) => void): this;
-    on(
-      event: "callUpdate",
-      listener: (
-        call: Call,
-        oldCall: OldCall,
-      ) => void,
-    ): this;
     on(event: "channelCreate" | "channelDelete", listener: (channel: AnyChannel) => void): this;
     on(
       event: "channelPinUpdate",
       listener: (channel: TextableChannel, timestamp: number, oldTimestamp: number) => void,
-    ): this;
-    on(
-      event: "channelRecipientAdd" | "channelRecipientRemove",
-      listener: (channel: GroupChannel, user: User) => void,
     ): this;
     on(
       event: "channelUpdate",
@@ -140,11 +128,6 @@ declare module "eris" {
         oldChannel: OldChannel,
       ) => void,
     ): this;
-    on(
-      event: "friendSuggestionCreate",
-      listener: (user: User, reasons: FriendSuggestionReasons) => void,
-    ): this;
-    on(event: "friendSuggestionDelete", listener: (user: User) => void): this;
     on(
       event: "guildAvailable" | "guildBanAdd" | "guildBanRemove",
       listener: (guild: Guild, user: User) => void,
@@ -186,13 +169,8 @@ declare module "eris" {
       roleMentions: string[],
       channelMentions: string[],
     }) => void): this;
-    on(event: "presenceUpdate", listener: (other: Member | Relationship, oldPresence?: OldPresence) => void): this;
+    on(event: "presenceUpdate", listener: (other: Member, oldPresence?: OldPresence) => void): this;
     on(event: "rawWS" | "unknown", listener: (packet: RawPacket, id: number) => void): this;
-    on(event: "relationshipAdd" | "relationshipRemove", listener: (relationship: Relationship) => void): this;
-    on(
-      event: "relationshipUpdate",
-      listener: (relationship: Relationship, oldRelationship: { type: number }) => void,
-    ): this;
     on(event: "shardPreReady" | "connect", listener: (id: number) => void): this;
     on(event: "typingStart", listener: (channel: TextableChannel, user: User) => void): this;
     on(event: "unavailableGuildCreate", listener: (guild: UnavailableGuild) => void): this;
@@ -333,13 +311,6 @@ declare module "eris" {
       message_notifications: number,
       channel_id: string,
     }>;
-  }
-
-  interface UserProfile {
-    premium_since?: number;
-    mutual_guilds: Array<{ nick?: string, id: string }>;
-    user: { username: string, discriminator: string, flags: number, id: string, avatar?: string };
-    connected_accounts: Array<{ verified: boolean, type: string, id: string, name: string }>;
   }
 
   interface Connection {
@@ -538,7 +509,6 @@ declare module "eris" {
     public guilds: Collection<Guild>;
     public privateChannelMap: { [s: string]: string };
     public privateChannels: Collection<PrivateChannel>;
-    public groupChannels: Collection<GroupChannel>;
     public voiceConnections: Collection<VoiceConnection>;
     public guildShardMap: { [s: string]: number };
     public startTime: number;
@@ -546,7 +516,6 @@ declare module "eris" {
     public uptime: number;
     public user: ExtendedUser;
     public users: Collection<User>;
-    public relationships: Collection<Relationship>;
     public userGuildSettings: { [s: string]: GuildSettings };
     public userSettings: UserSettings;
     public notes: { [s: string]: string };
@@ -581,7 +550,7 @@ declare module "eris" {
       rateLimitPerUser?: number,
       nsfw?: boolean,
       parentID?: string,
-    },                 reason?: string): Promise<GroupChannel | AnyGuildChannel>;
+    },                 reason?: string): Promise<AnyGuildChannel>;
     public editChannelPosition(channelID: string, position: number): Promise<void>;
     public deleteChannel(channelID: string, reason?: string): Promise<void>;
     public sendChannelTyping(channelID: string): Promise<void>;
@@ -649,7 +618,6 @@ declare module "eris" {
     public getSelf(): Promise<ExtendedUser>;
     public editSelf(options: { username?: string, avatar?: string }): Promise<ExtendedUser>;
     public getDMChannel(userID: string): Promise<PrivateChannel>;
-    public createGroupChannel(userIDs: string[]): Promise<GroupChannel>;
     public getMessage(channelID: string, messageID: string): Promise<Message>;
     public getMessages(
       channelID: string,
@@ -710,61 +678,6 @@ declare module "eris" {
     public deleteGuild(guildID: string): Promise<void>;
     public leaveGuild(guildID: string): Promise<void>;
     public getOAuthApplication(appID?: string): Promise<OAuthApplicationInfo>;
-    public addRelationship(userID: string, block?: boolean): Promise<void>;
-    public removeRelationship(userID: string): Promise<void>;
-    public addGroupRecipient(groupID: string, userID: string): Promise<void>;
-    public removeGroupRecipient(groupID: string, userID: string): Promise<void>;
-    public getUserProfile(userID: string): Promise<UserProfile>;
-    public editUserNote(userID: string, note: string): Promise<void>;
-    public deleteUserNote(userID: string): Promise<void>;
-    public getSelfConnections(): Promise<Connection[]>;
-    public editSelfConnection(
-      platform: string,
-      id: string,
-      data: { friendSync: boolean, visibility: number },
-    ): Promise<Connection>;
-    public deleteSelfConnection(platform: string, id: string): Promise<void>;
-    public getSelfSettings(): Promise<UserSettings>;
-    public editSelfSettings(data: UserSettings): Promise<UserSettings>;
-    public getSelfMFACodes(
-      password: string,
-      regenerate?: boolean,
-    ): Promise<{ backup_codes: Array<{ code: string, consumed: boolean }> }>;
-    public enableSelfMFATOTP(
-      secret: string,
-      code: string,
-    ): Promise<{ token: string, backup_codes: Array<{ code: string, consumed: boolean }> }>;
-    public disableSelfMFATOTP(code: string): Promise<{ token: string }>;
-    public getSelfBilling(): Promise<{
-      premium_subscription?: {
-        status: number,
-        ended_at?: string,
-        canceled_at?: string,
-        created_at: string,
-        current_period_end?: string,
-        current_period_start?: string,
-        plan: string,
-      },
-      payment_source?: {
-        type: string,
-        brand: string,
-        invalid: boolean,
-        last_4: number,
-        expires_year: number,
-        expires_month: number,
-      },
-      payment_gateway?: string,
-    }>;
-    public getSelfPayments(): Promise<Array<{
-      status: number,
-      amount_refunded: number,
-      description: string,
-      created_at: string, // date
-      currency: string,
-      amount: number,
-    }>>;
-    public addSelfPremiumSubscription(token: string, plan: string): Promise<void>;
-    public deleteSelfPremiumSubscription(): Promise<void>;
     public getRESTChannel(channelID: string): Promise<AnyChannel>;
     public getRESTGuild(guildID: string): Promise<Guild>;
     public getRESTGuilds(limit?: number, before?: string, after?: string): Promise<Guild[]>;
@@ -780,22 +693,10 @@ declare module "eris" {
     // tslint:disable-next-line
     public on(event: string, listener: Function): this;
     public on(event: "ready" | "disconnect", listener: () => void): this;
-    public on(event: "callCreate" | "callRing" | "callDelete", listener: (call: Call) => void): this;
-    public on(
-      event: "callUpdate",
-      listener: (
-        call: Call,
-        oldCall: OldCall,
-      ) => void,
-    ): this;
     public on(event: "channelCreate" | "channelDelete", listener: (channel: AnyChannel) => void): this;
     public on(
       event: "channelPinUpdate",
       listener: (channel: TextableChannel, timestamp: number, oldTimestamp: number) => void,
-    ): this;
-    public on(
-      event: "channelRecipientAdd" | "channelRecipientRemove",
-      listener: (channel: GroupChannel, user: User) => void,
     ): this;
     public on(
       event: "channelUpdate",
@@ -804,11 +705,6 @@ declare module "eris" {
         oldChannel: OldChannel,
       ) => void,
     ): this;
-    public on(
-      event: "friendSuggestionCreate",
-      listener: (user: User, reasons: FriendSuggestionReasons) => void,
-    ): this;
-    public on(event: "friendSuggestionDelete", listener: (user: User) => void): this;
     public on(
       event: "guildAvailable" | "guildBanAdd" | "guildBanRemove",
       listener: (guild: Guild, user: User) => void,
@@ -853,16 +749,11 @@ declare module "eris" {
     public on(
       event: "presenceUpdate",
       listener: (
-        other: Member | Relationship,
+        other: Member,
         oldPresence?: OldPresence,
       ) => void,
     ): this;
     public on(event: "rawWS" | "unknown", listener: (packet: RawPacket, id: number) => void): this;
-    public on(event: "relationshipAdd" | "relationshipRemove", listener: (relationship: Relationship) => void): this;
-    public on(
-      event: "relationshipUpdate",
-      listener: (relationship: Relationship, oldRelationship: { type: number }) => void,
-    ): this;
     public on(event: "typingStart", listener: (channel: TextableChannel, user: User) => void): this;
     public on(event: "unavailableGuildCreate", listener: (guild: UnavailableGuild) => void): this;
     public on(
@@ -993,20 +884,6 @@ declare module "eris" {
     public remove(obj: T | { id: string }): T;
   }
 
-  export class Call extends Base {
-    public constructor(data: BaseData, channel: GroupChannel);
-    public id: string;
-    public createdAt: number;
-    public channel: GroupChannel;
-    public voiceStates: Collection<VoiceState>;
-    public participants: string[];
-    public endedTimestamp?: number;
-    public ringing?: string[];
-    public region?: string;
-    public unavailable: boolean;
-    public toJSON(): JSONCache;
-  }
-
   export class Channel extends Base {
     public id: string;
     public mention: string;
@@ -1021,19 +898,6 @@ declare module "eris" {
     public email: string;
     public verified: boolean;
     public mfaEnabled: boolean;
-    public toJSON(): SimpleJSON
-  }
-
-  export class GroupChannel extends PrivateChannel {
-    public recipients: Collection<User>;
-    public name: string;
-    public icon?: string;
-    public iconURL?: string;
-    public ownerID: string;
-    public edit(options: { name?: string, icon?: string, ownerID?: string }): Promise<GroupChannel>;
-    public addRecipient(userID: string): Promise<void>;
-    public removeRecipient(userID: string): Promise<void>;
-    public dynamicIconURL(format: string, size: number): string;
     public toJSON(): SimpleJSON
   }
 
@@ -1356,8 +1220,6 @@ declare module "eris" {
     public lastMessageID: string;
     public recipient: User;
     public messages: Collection<Message>;
-    public ring(recipient: string[]): void;
-    public syncCall(): void;
     public leave(): Promise<void>;
     public sendTyping(): Promise<void>;
     public getMessage(messageID: string): Promise<Message>;
@@ -1382,15 +1244,6 @@ declare module "eris" {
     public removeMessageReactions(messageID: string): Promise<void>;
     public deleteMessage(messageID: string, reason?: string): Promise<void>;
     public unsendMessage(messageID: string): Promise<void>;
-  }
-
-  export class Relationship {
-    public id: string;
-    public user: User;
-    public type: number;
-    public status: string;
-    public game?: GamePresence;
-    public constructor(data: BaseData, client: Client);
   }
 
   export class Role extends Base {
@@ -1435,11 +1288,6 @@ declare module "eris" {
     public constructor(data: BaseData, client: Client);
     public dynamicAvatarURL(format?: string, size?: number): string;
     public getDMChannel(): Promise<PrivateChannel>;
-    public addRelationship(block?: boolean): Promise<void>;
-    public removeRelationship(): Promise<void>;
-    public getProfile(): Promise<UserProfile>;
-    public editNote(note: string): Promise<void>;
-    public deleteNote(): Promise<void>;
   }
 
   export class VoiceState extends Base implements NestedJSON {
@@ -1474,22 +1322,10 @@ declare module "eris" {
     // tslint:disable-next-line
     public on(event: string, listener: Function): this;
     public on(event: "ready" | "disconnect", listener: () => void): this;
-    public on(event: "callCreate" | "callRing" | "callDelete", listener: (call: Call) => void): this;
-    public on(
-      event: "callUpdate",
-      listener: (
-        call: Call,
-        oldCall: OldCall,
-      ) => void,
-    ): this;
     public on(event: "channelCreate" | "channelDelete", listener: (channel: AnyChannel) => void): this;
     public on(
       event: "channelPinUpdate",
       listener: (channel: TextableChannel, timestamp: number, oldTimestamp: number) => void,
-    ): this;
-    public on(
-      event: "channelRecipientAdd" | "channelRecipientRemove",
-      listener: (channel: GroupChannel, user: User) => void,
     ): this;
     public on(
       event: "channelUpdate",
@@ -1498,11 +1334,6 @@ declare module "eris" {
         oldChannel: OldChannel,
       ) => void,
     ): this;
-    public on(
-      event: "friendSuggestionCreate",
-      listener: (user: User, reasons: FriendSuggestionReasons) => void,
-    ): this;
-    public on(event: "friendSuggestionDelete", listener: (user: User) => void): this;
     public on(
       event: "guildAvailable" | "guildBanAdd" | "guildBanRemove",
       listener: (guild: Guild, user: User) => void,
@@ -1547,16 +1378,11 @@ declare module "eris" {
     public on(
       event: "presenceUpdate",
       listener: (
-        other: Member | Relationship,
+        other: Member,
         oldPresence?: OldPresence,
       ) => void,
     ): this;
     public on(event: "rawWS" | "unknown", listener: (packet: RawPacket, id: number) => void): this;
-    public on(event: "relationshipAdd" | "relationshipRemove", listener: (relationship: Relationship) => void): this;
-    public on(
-      event: "relationshipUpdate",
-      listener: (relationship: Relationship, oldRelationship: { type: number }) => void,
-    ): this;
     public on(event: "shardPreReady" | "connect", listener: (id: number) => void): this;
     public on(event: "typingStart", listener: (channel: TextableChannel, user: User) => void): this;
     public on(event: "unavailableGuildCreate", listener: (guild: UnavailableGuild) => void): this;
