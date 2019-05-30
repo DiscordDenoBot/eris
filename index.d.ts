@@ -3,7 +3,7 @@ declare module "eris" {
   import { EventEmitter } from "events";
   import { Readable as ReadableStream } from "stream";
   import { Agent as HTTPAgent } from "http";
-  import { Agent as HTTPSAgent } from "https";
+  import { ClientOptions as wsOptions } from "ws";
 
   export const VERSION: string;
   interface JSONCache { [s: string]: any; }
@@ -417,9 +417,9 @@ declare module "eris" {
     seedVoiceConnections?: boolean;
     defaultImageFormat?: string;
     defaultImageSize?: number;
-    ws?: any;
+    ws?: wsOptions;
     latencyThreshold?: number;
-    agent?: HTTPAgent | HTTPSAgent
+    agent?: HTTPAgent
   }
   interface CommandClientOptions {
     defaultHelpCommand?: boolean;
