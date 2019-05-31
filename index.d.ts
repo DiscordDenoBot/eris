@@ -4,6 +4,7 @@ declare module "eris" {
   import { Readable as ReadableStream } from "stream";
   import { Agent as HTTPAgent } from "http";
   import { ClientOptions as wsOptions } from "ws";
+  import { ClientOpts as RedisOptions } from "redis";
 
   export const VERSION: string;
   interface JSONCache { [s: string]: any; }
@@ -400,26 +401,66 @@ declare module "eris" {
   type PossiblyUncachedMessage = Message | { id: string, channel: TextableChannel };
   interface RawPacket { op: number; t?: string; d?: any; s?: number; }
   interface ClientOptions {
+    /**
+     * @default true
+     */
     autoreconnect?: boolean;
+    /**
+     * @default false
+     */
     compress?: boolean;
+    /**
+     * @default 30000
+     */
     connectionTimeout?: number;
     disableEvents?: { [s: string]: boolean };
+    /**
+     * @default 
+     */
     disableEveryone?: boolean;
+    /**
+     * @default 0
+     */
     firstShardID?: number;
+    /**
+     * @default false
+     */
     getAllUsers?: boolean;
+    /**
+     * @default 2000
+     */
     guildCreateTimeout?: number;
+    /**
+     * @default 250
+     */
     largeThreshold?: number;
     lastShardID?: number;
     maxShards?: number | "auto";
     messageLimit?: number;
     opusOnly?: boolean;
+    /**
+     * @default false
+     */
     restMode?: boolean;
     seedVoiceConnections?: boolean;
+    /**
+     * @default "webp"
+     */
     defaultImageFormat?: string;
     defaultImageSize?: number;
     ws?: wsOptions;
+    /**
+     * @default 30000
+     */
     latencyThreshold?: number;
-    agent?: HTTPAgent
+    /**
+     * @default null
+     */
+    agent?: HTTPAgent;
+    /**
+     * @default null
+     */
+    redis?: RedisOptions
   }
   interface CommandClientOptions {
     defaultHelpCommand?: boolean;
